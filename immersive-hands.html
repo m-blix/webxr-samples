@@ -191,6 +191,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         }
       });
 
+      session.addEventListener('select', onSelect);
+
       // Create a WebGL context to render with, initialized to be compatible
       // with the XRDisplay we're presenting to.
       gl = createWebGLContext({
@@ -220,6 +222,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         // Inform the session that we're ready to begin drawing.
         session.requestAnimationFrame(onXRFrame);
       });
+    }
+
+    function onSelect(ev) {
+      console.log("select");
+      if (interactionBox) {
+        let uniforms = interactionBox.renderPrimitives[0].uniforms;
+        if (uniforms) {
+          uniforms.baseColorFactor.value = [Math.random(), Math.random(), Math.random(), 1.0];
+        }
+      }
     }
 
     // Called when the user clicks the 'Exit XR' button. In response we end
