@@ -165,7 +165,37 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         session.addEventListener('squeezeend', onSqueezeEnd);
         session.addEventListener('squeeze', onSqueeze);
 
+        // keyboard handling
+        document.addEventListener('keydown', (event) => {
+          const keyName = event.key;
+          console.log('keydown: ' + keyName);
+          changeBoxColor();
+        }, false);
+
         initGL();
+
+        let gpIndex;
+        // regular gamepad handling
+        window.addEventListener('gamepadconnected', (e) => {
+          console.log(
+            "Gamepad connected at index %d: %s. %d buttons, %d axes.",
+            e.gamepad.index,
+            e.gamepad.id,
+            e.gamepad.buttons.length,
+            e.gamepad.axes.length,
+          );
+          gpIndex = e.gamepad.index;
+
+          setInterval(() => {
+            let gp = navigator.getGamepads()[gpIndex];
+            let oneIsPressed = gp.buttons[0].pressed;
+            let twoIsPressed = gp.buttons[1].pressed;
+            if (oneIsPressed || twoIsPressed) {
+              console.log('pressed');
+              changeBoxColor();
+            }
+          }, 100);
+        });
 
         // This and all future samples that visualize controllers will use this
         // convenience method to listen for changes to the active XRInputSources
@@ -238,6 +268,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           vec3.add(currently_selected_box.scale, currently_selected_box.scale, [-0.5, -0.5, -0.5]);
           currently_selected_box.selected = true;
         }
+      }
+
+      function changeBoxColor() {
+        let box = boxes[1];
+        let uniforms = box.renderPrimitive.uniforms;
+        uniforms.baseColorFactor.value = [Math.random(), Math.random(), Math.random(), 1.0];
       }
 
       function onSqueezeStart(ev) {
